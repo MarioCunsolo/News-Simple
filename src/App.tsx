@@ -1,25 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { Article, RootObject } from "./news.interface";
+import Cards from "./components/Card";
+import axios from "axios";
+import Navbar from "./components/Navbar";
 
 function App() {
+  const [arrayData, setArrayData] = useState<Article[]>([]);
+
+  const getData = async () =>
+    axios
+      .get<RootObject>(
+        `https://newsapi.org/v2/top-headlines?country=it&category=general&apiKey=b107b4e62552467291711323bc5b4f42`
+      )
+      .then((response) => {
+        const { articles } = response.data;
+        setArrayData(articles);
+      });
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <>
+    <Navbar />
+    <div className="row justify-content-around align-items-center">
+      {arrayData.map((item) => (
+        <Cards item={item} />
+      ))}
     </div>
+    </>
   );
 }
 
